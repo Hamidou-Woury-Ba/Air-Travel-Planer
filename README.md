@@ -35,3 +35,11 @@ Currently, two official plugins are available:
 
 
 ## On exécute cette commande pour la configuration du projet shadcn-ui
+    npx shadcn-ui@latest init
+
+# Gestion des routes
+## On se dirige vers le site
+    https://reactrouter.com/
+
+## Installer react router
+    npm install react-router-dom
