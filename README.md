@@ -8,19 +8,19 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 
-# Create a react project 
+# Créer un project react 
     npm create vite@latest
 
-# Intall all modules
+# Intaller tous les modules
     npm install
 
-# Run application
+# Lancer l'application
     npm run dev
 
-# Install TailwindCss and dependencies
-## Go to 
+# Installer TailwindCss and ses dépendences
+## Lien site 
     https://ui.shadcn.com/
-
+## Installation    
     npm install -D tailwindcss postcss autoprefixer
     npx tailwindcss init -p
 
@@ -43,3 +43,20 @@ Currently, two official plugins are available:
 
 ## Installer react router
     npm install react-router-dom
+
+# Composant React pour utiliser facilement la saisie semi-automatique de Google Places
+
+## Lien du site   
+    https://www.npmjs.com/package/react-google-places-autocomplete
+
+## Installation
+    npm install --save react-google-places-autocomplete
+
+## API de Google maps  
+    https://mapsplatform.google.com/pricing/?hl=fr&_gl=1*y5bq82*_ga*MTgxMzUyMDg2My4xNzIzMzgxNTE1*_ga_NRWSTWS78N*MTcyMzM4MTUxNi4xLjEuMTcyMzM4MjEwNC4wLjAuMA..
+
+# Installation de Material UI, le framework React UI le plus populaire au monde
+    npm install @mui/material @emotion/react @emotion/styled
+
+# Site pour avoir des emojis gratuits
+    https://emojipedia.org/
