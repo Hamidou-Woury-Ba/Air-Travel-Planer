@@ -3,165 +3,246 @@ import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import {Input} from '../components/ui/input'
-import {SelectBudgetOptions, selectTravelesList} from '../components/constants/options'
+import { Input } from '../components/ui/input'
+import { SelectBudgetOptions, selectTravelesList } from '../components/constants/options'
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { toast } from "sonner"
 import { AI_PROMPT } from '../components/constants/options';
 import { chatSession } from '@/service/IAModel';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { FcGoogle } from "react-icons/fc";
+import { useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
 
-
+// Fonction principale pour créer un voyage
 function createTrip() {
+// Déclare des états pour stocker les informations du formulaire et les paramètres de la page
 
   const [place, setPlace] = useState()
 
-  const [selectedCountry, setSelectedCountry] = useState();
+  const [selectedCountry, setSelectedCountry] = useState(); // État pour le pays sélectionné
 
-  const [formData, setFormData] = useState([])
+  const [formData, setFormData] = useState([]) // État pour stocker les données du formulaire
 
+  const [openDialog, setOpenDialog] = useState(false) // État pour gérer l'ouverture du dialogue de connexion
+
+  // Fonction pour gérer le changement de pays sélectionné
   const handleCountryChange = (event, value) => {
     setSelectedCountry(value);
     handleInputChange('location', value);  // Ajout du pays sélectionné à formData
   };
 
+  // Fonction pour gérer les changements dans le formulaire
   const handleInputChange = (name, value) => {
-    
+
     setFormData({
       ...formData,
-      [name] : value
+      [name]: value
     })
   }
 
+  // Utilisation de useEffect pour surveiller les changements de formData
   useEffect(() => {
-    console.log(formData)   
+    console.log(formData)
   }, [formData])
 
+  // Configuration de la connexion Google
+  const login = useGoogleLogin({
+    onSuccess: (codeResp) => getUserProfile(codeResp), // En cas de succès, récupérer le profil utilisateur
+    onError: (error) => console.log(error) // En cas d'erreur, afficher l'erreur dans la console
+  })
+
+  // Fonction asynchrone pour générer un voyage en utilisant les données du formulaire
   const onGenerateTrip = async () => {
 
-    if (formData?.noOfDays >  5 && !formData?.budget || !formData?.location || !formData?.traveler) {  
-      toast("Please fill all the details")
+    const user = localStorage.getItem('user')
+
+    // Si l'utilisateur n'est pas connecté, ouvrir le dialogue de connexion
+    if (!user) {
+      setOpenDialog(true)
       return
     }
 
+    // Vérification des champs obligatoires avant de générer le voyage
+    if (formData?.noOfDays > 5 && !formData?.budget || !formData?.location || !formData?.traveler) {
+      toast("Please fill all the details") // Afficher un message d'erreur si les champs ne sont pas remplis
+      return
+    }
+
+    // Remplacement des variables dans le prompt AI
     const FINAL_PROMPT = AI_PROMPT
-    .replace('{location}', formData?.location?.label)
-    .replace('{totalDays}', formData?.noOfDays)
-    .replace('{traveler}', formData?.traveler)
-    .replace('{budget}', formData?.budget)
-    .replace('{totalDays}', formData?.noOfDays)
+      .replace('{location}', formData?.location?.label)
+      .replace('{totalDays}', formData?.noOfDays)
+      .replace('{traveler}', formData?.traveler)
+      .replace('{budget}', formData?.budget)
+      .replace('{totalDays}', formData?.noOfDays)
 
     console.log(FINAL_PROMPT)
 
+     // Envoi du message à l'IA pour obtenir le résultat
     const result = await chatSession.sendMessage(FINAL_PROMPT)
 
     console.log(result?.response?.text())
   }
 
+  // Fonction pour récupérer le profil utilisateur après la connexion Google
+  const getUserProfile = (tokenInfo) => {
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`,{
+      headers:{
+        Authorization: `Bearer ${tokenInfo?.access_token}`,
+        Accept: 'application/json'
+      }
+    }
+    ).then((resp) => {
+      console.log(resp)
+      localStorage.setItem('user', JSON.stringify(resp.data))
+      setOpenDialog(false)
+      onGenerateTrip()
+    })
+  }
+
+  // Structure JSX de la page
   return (
     <div className='sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10 '>
-        <h2 className='font-medium text-3xl'>Tell us your travel preferences 🏕️🌴</h2>
-        <p className='mt-3 text-gray-500 text-xl'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo repellendus saepe natus praesentium accusantium laborum deleniti velit magni ut ab quo, dolorem esse. Ad officia maiores quos, molestias rem nisi?</p>
-        <div className='mt-20 flex flex-col gap-9'>
-          <div>
-            <h2 className='text-xl my-3 font-medium'>What is destination of choice ?</h2>
-            {/* <GooglePlacesAutocomplete apiKey={import.meta.env.VITE_GOOGLE_PLACES_API_KEY}/> */}
-            <Autocomplete 
-              id="country-select-demo"
-              options={countries}
-              autoHighlight
-              getOptionLabel={(option) => option.label}
-              onChange = {handleCountryChange}
-              renderOption={(props, option) => {
-                const { key, ...optionProps } = props;
-                return (
-                  <Box
-                    key={key}
-                    component="li"
-                    sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
-                    {...optionProps}
-                  >
-                    <img
-                      loading="lazy"
-                      width="20"
-                      srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                      src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                      alt=""
-                    />
-                    {option.label} ({option.code}) +{option.phone}
-                  </Box>
-                );
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Choose a country"
-                  inputProps={{
-                    ...params.inputProps,
-                    autoComplete: 'new-password', // disable autocomplete and autofill
-                  }}
-                />
-              )}
-            />
-          </div>
-
-          <div>
-            <h2 className='font-medium my-3 text-3xl pb-2'>How many days are you planning your tips ?</h2>
-            <Input 
-              placeholder='Ex.3' 
-              type="number" 
-              onChange={(e) => handleInputChange('noOfDays', e.target.value)}
-            />
-          </div>
+      <h2 className='font-medium text-3xl'>Tell us your travel preferences 🏕️🌴</h2>
+      <p className='mt-3 text-gray-500 text-xl'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo repellendus saepe natus praesentium accusantium laborum deleniti velit magni ut ab quo, dolorem esse. Ad officia maiores quos, molestias rem nisi?</p>
+      {/* Section pour choisir la destination */}
+      <div className='mt-20 flex flex-col gap-9'>
+        <div>
+          <h2 className='text-xl my-3 font-medium'>What is destination of choice ?</h2>
+          {/* <GooglePlacesAutocomplete apiKey={import.meta.env.VITE_GOOGLE_PLACES_API_KEY}/> */}
+          <Autocomplete
+            id="country-select-demo"
+            options={countries} // Options de pays disponibles
+            autoHighlight
+            getOptionLabel={(option) => option.label} // Affichage du label du pays
+            onChange={handleCountryChange} // Appel lors du changement de pays
+            renderOption={(props, option) => {
+              const { key, ...optionProps } = props;
+              return (
+                <Box
+                  key={key}
+                  component="li"
+                  sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                  {...optionProps}
+                >
+                  <img
+                    loading="lazy"
+                    width="20"
+                    srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                    src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                    alt=""
+                  />
+                  {option.label} ({option.code}) +{option.phone}
+                </Box>
+              );
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Choose a country"
+                inputProps={{
+                  ...params.inputProps,
+                  autoComplete: 'new-password', // Désactiver l'autocomplétion
+                }}
+              />
+            )}
+          />
         </div>
 
+        {/* Section pour choisir le nombre de jours */}
         <div>
-          <h2 className='font-medium my-3 text-3xl'>What is your budget ?</h2>
-          <div className='grid grid-cols-4 gap-5 mt-5'>
-            {SelectBudgetOptions.map((item, index) => (
-              <div 
-                key={index} 
-                className={
-                  `p-4 cursor-pointer border rounded-lg hover:shadow-lg
+          <h2 className='font-medium my-3 text-3xl pb-2'>How many days are you planning your tips ?</h2>
+          <Input
+            placeholder='Ex.3'
+            type="number"
+            onChange={(e) => handleInputChange('noOfDays', e.target.value)} // Appel lors du changement de valeur
+          />
+        </div>
+      </div>
+
+      {/* Section pour choisir le budget */}
+      <div>
+        <h2 className='font-medium my-3 text-3xl'>What is your budget ?</h2>
+        <div className='grid grid-cols-4 gap-5 mt-5'>
+          {SelectBudgetOptions.map((item, index) => (
+            <div
+              key={index}
+              className={
+                `p-4 cursor-pointer border rounded-lg hover:shadow-lg
                   ${formData?.budget == item.title && 'shadow-lg border-black'}`
-                }
-                onClick={() => handleInputChange('budget', item.title)}
-              >
-                <h2 className='text-4xl'>{item.icon}</h2>
-                <h2 className='font-bold text-lg'>{item.title}</h2>
-                <h2 className='text-sm text-gray-500'>{item.desc}</h2>
-              </div>  
-            ))}
-          </div>
+              }
+              onClick={() => handleInputChange('budget', item.title)}  // Appel lors du clic pour sélectionner un budget
+            >
+              <h2 className='text-4xl'>{item.icon}</h2>
+              <h2 className='font-bold text-lg'>{item.title}</h2>
+              <h2 className='text-sm text-gray-500'>{item.desc}</h2>
+            </div>
+          ))}
         </div>
+      </div>
 
-        <div>
-          <h2 className='font-medium my-3 text-3xl'>Who do you plan on travelling on your next adventure ?</h2>
-          <div className='grid grid-cols-4 gap-5 mt-5'>
-            {selectTravelesList.map((item, index) => (
-              <div 
-                key={index} 
-                className={
-                  `p-4 cursor-pointer border rounded-lg hover:shadow-lg
+      {/* Section pour choisir le nombre de voyageurs */}
+      <div>
+        <h2 className='font-medium my-3 text-3xl'>Who do you plan on travelling on your next adventure ?</h2>
+        <div className='grid grid-cols-4 gap-5 mt-5'>
+          {selectTravelesList.map((item, index) => (
+            <div
+              key={index}
+              className={
+                `p-4 cursor-pointer border rounded-lg hover:shadow-lg
                   ${formData?.traveler == item.people && 'shadow-lg border-black'}`
-                }
-                onClick={() => handleInputChange('traveler', item.people)}
+              }
+              onClick={() => handleInputChange('traveler', item.people)}  // Appel lors du clic pour sélectionner des compagnons de voyage
+            >
+              <h2 className='text-4xl'>{item.icon}</h2>
+              <h2 className='font-bold text-lg'>{item.title}</h2>
+              <h2 className='text-sm text-gray-500'>{item.desc}</h2>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bouton pour générer le voyage */}
+      <div className='my-10 justify-end flex'>
+        <Button onClick={onGenerateTrip} >Generate trip</Button>
+      </div>
+
+      {/* Dialogue pour la connexion Google */}
+      <Dialog open={openDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogDescription>
+              <img src={'/logo.svg'} />
+              <h2 className='font-bold text-lg mt-7'>Sign in with Google</h2>
+              <p>Sign in to the app with Google authentication securely</p>
+              <Button 
+                onClick={login}
+                className="w-full mt-5 flex gap-4 items-center" 
               >
-                <h2 className='text-4xl'>{item.icon}</h2>
-                <h2 className='font-bold text-lg'>{item.title}</h2>
-                <h2 className='text-sm text-gray-500'>{item.desc}</h2>
-              </div>  
-            ))}
-          </div>
-        </div>
-        <div className='my-10 justify-end flex'>
-          <Button onClick={onGenerateTrip} >Generate trip</Button>
-        </div>
-    </div> 
+                <FcGoogle className='h-7 w-7'/>
+                Sign in Google
+              </Button>
+            </DialogDescription> 
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+
+    </div>
   )
 }
 
+// Liste des pays avec leurs codes et numéros de téléphone
 const countries = [
   { code: 'AD', label: 'Andorra', phone: '376' },
   {
