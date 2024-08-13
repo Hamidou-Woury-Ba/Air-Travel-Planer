@@ -21,11 +21,14 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '@/service/firebaseconfig';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 
 // Fonction principale pour créer un voyage
 function createTrip() {
-// Déclare des états pour stocker les informations du formulaire et les paramètres de la page
+  // Déclare des états pour stocker les informations du formulaire et les paramètres de la page
 
   const [place, setPlace] = useState()
 
@@ -34,6 +37,8 @@ function createTrip() {
   const [formData, setFormData] = useState([]) // État pour stocker les données du formulaire
 
   const [openDialog, setOpenDialog] = useState(false) // État pour gérer l'ouverture du dialogue de connexion
+
+  const [loading, setLoading] = useState(false) // État pour gérer le chargement de la page
 
   // Fonction pour gérer le changement de pays sélectionné
   const handleCountryChange = (event, value) => {
@@ -61,43 +66,77 @@ function createTrip() {
     onError: (error) => console.log(error) // En cas d'erreur, afficher l'erreur dans la console
   })
 
-  // Fonction asynchrone pour générer un voyage en utilisant les données du formulaire
+  // Fonction asynchrone qui génère un voyage basé sur les données saisies par l'utilisateur dans le formulaire
   const onGenerateTrip = async () => {
 
+    // Récupération des informations de l'utilisateur depuis le stockage local
     const user = localStorage.getItem('user')
 
-    // Si l'utilisateur n'est pas connecté, ouvrir le dialogue de connexion
+    // Vérifie si l'utilisateur est connecté, sinon ouvre une fenêtre de dialogue pour se connecter
     if (!user) {
-      setOpenDialog(true)
-      return
+      setOpenDialog(true) // Ouvre le dialogue de connexion
+      return // Interrompt l'exécution de la fonction si l'utilisateur n'est pas connecté
     }
 
-    // Vérification des champs obligatoires avant de générer le voyage
-    if (formData?.noOfDays > 5 && !formData?.budget || !formData?.location || !formData?.traveler) {
-      toast("Please fill all the details") // Afficher un message d'erreur si les champs ne sont pas remplis
-      return
+    // Validation des champs obligatoires avant de générer le voyage
+    // Si le nombre de jours est supérieur à 5 et que le budget, la destination ou le nombre de voyageurs n'est pas renseigné, afficher un message d'erreur
+    if (formData?.noOfDays > 5 && (!formData?.budget || !formData?.location || !formData?.traveler)) {
+      toast("Please fill all the details") // Affiche un message demandant à l'utilisateur de remplir tous les champs requis
+      return // Interrompt l'exécution de la fonction si les conditions ne sont pas remplies
     }
 
-    // Remplacement des variables dans le prompt AI
+    // Active l'indicateur de chargement pour indiquer que le processus est en cours
+    setLoading(true)
+
+    // Construction du prompt pour l'IA en remplaçant les variables par les valeurs fournies par l'utilisateur
     const FINAL_PROMPT = AI_PROMPT
-      .replace('{location}', formData?.location?.label)
-      .replace('{totalDays}', formData?.noOfDays)
-      .replace('{traveler}', formData?.traveler)
-      .replace('{budget}', formData?.budget)
-      .replace('{totalDays}', formData?.noOfDays)
+      .replace('{location}', formData?.location?.label) // Remplace {location} par la destination choisie
+      .replace('{totalDays}', formData?.noOfDays) // Remplace {totalDays} par le nombre total de jours du voyage
+      .replace('{traveler}', formData?.traveler) // Remplace {traveler} par le nombre de voyageurs
+      .replace('{budget}', formData?.budget) // Remplace {budget} par le budget alloué
 
-    console.log(FINAL_PROMPT)
-
-     // Envoi du message à l'IA pour obtenir le résultat
+    // Envoi du prompt finalisé à l'IA pour générer une proposition de voyage
     const result = await chatSession.sendMessage(FINAL_PROMPT)
 
-    console.log(result?.response?.text())
+    // Affichage du résultat obtenu dans la console pour le débogage
+    console.log("--", result?.response?.text())
+
+    // Désactive l'indicateur de chargement une fois la réponse de l'IA reçue
+    setLoading(false)
+
+    // Sauvegarde les données du voyage généré dans la base de données
+    SaveAiTrip(result?.response?.text())
   }
+
+  // Fonction asynchrone pour sauvegarder les données du voyage généré par l'IA
+  const SaveAiTrip = async (TripData) => {
+
+    // Active l'indicateur de chargement pour indiquer que la sauvegarde est en cours
+    setLoading(true)
+
+    // Génère un identifiant unique pour le document basé sur le timestamp actuel
+    const docId = Date.now().toString()
+
+    // Récupère les informations de l'utilisateur depuis le stockage local, converties en objet JavaScript
+    const user = JSON.parse(localStorage.getItem('user'))
+
+    // Enregistre un nouveau document dans la collection "AITrips" de la base de données Firebase
+    await setDoc(doc(db, "AITrips", docId), {
+      userSelection: formData, // Enregistre les données de sélection de l'utilisateur (destination, budget, etc.)
+      tripData: JSON.parse(TripData), // Enregistre les données du voyage généré par l'IA
+      userEmail: user?.email, // Enregistre l'adresse e-mail de l'utilisateur pour référence
+      id: docId // Enregistre l'identifiant unique du document
+    });
+
+    // Désactive l'indicateur de chargement une fois la sauvegarde terminée
+    setLoading(false)
+  }
+
 
   // Fonction pour récupérer le profil utilisateur après la connexion Google
   const getUserProfile = (tokenInfo) => {
-    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`,{
-      headers:{
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`, {
+      headers: {
         Authorization: `Bearer ${tokenInfo?.access_token}`,
         Accept: 'application/json'
       }
@@ -212,9 +251,36 @@ function createTrip() {
         </div>
       </div>
 
-      {/* Bouton pour générer le voyage */}
+      {/* 
+        Cette section représente le bouton utilisé pour déclencher la génération d'un voyage. 
+        Le bouton est positionné à l'intérieur d'un conteneur flexbox qui aligne le bouton 
+        à droite avec un espace vertical ('my-10') pour le séparer des autres éléments de l'interface.
+      */}
       <div className='my-10 justify-end flex'>
-        <Button onClick={onGenerateTrip} >Generate trip</Button>
+        {/* 
+          Le composant Button est utilisé pour permettre à l'utilisateur de lancer 
+          le processus de génération de voyage. Le bouton est désactivé si la variable 
+          'loading' est vraie, ce qui indique que le processus de génération est en cours.
+          En cliquant sur ce bouton, la fonction onGenerateTrip est déclenchée.
+        */}
+        <Button
+          disabled={loading}  // Désactive le bouton pendant le chargement pour éviter les actions répétées
+          onClick={onGenerateTrip} // Associe la fonction onGenerateTrip au clic sur le bouton
+        >
+
+          {/* 
+            Le contenu du bouton est conditionnel : 
+            - Si 'loading' est vrai (le voyage est en cours de génération), un spinner est affiché pour indiquer que l'application est en train de traiter la demande. Ce spinner est représenté par l'icône AiOutlineLoading3Quarters de la librairie React Icons.
+            - Si 'loading' est faux (aucun traitement en cours), le texte "Generate trip" est affiché.
+          */}
+          {
+            loading ?
+              <AiOutlineLoading3Quarters
+                className='h-7 w-7 animate-spin' // Spinner avec une animation de rotation continue pour indiquer le chargement
+              /> :
+              'Generate trip ' // Texte par défaut affiché sur le bouton lorsque l'application est prête à générer un voyage
+          }
+        </Button>
       </div>
 
       {/* Dialogue pour la connexion Google */}
@@ -225,14 +291,14 @@ function createTrip() {
               <img src={'/logo.svg'} />
               <h2 className='font-bold text-lg mt-7'>Sign in with Google</h2>
               <p>Sign in to the app with Google authentication securely</p>
-              <Button 
+              <Button
                 onClick={login}
-                className="w-full mt-5 flex gap-4 items-center" 
+                className="w-full mt-5 flex gap-4 items-center"
               >
-                <FcGoogle className='h-7 w-7'/>
+                <FcGoogle className='h-7 w-7' />
                 Sign in Google
               </Button>
-            </DialogDescription> 
+            </DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>

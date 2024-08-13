@@ -95,3 +95,23 @@ Currently, two official plugins are available:
     Axios est un client HTTP simple et efficace pour effectuer des requêtes vers des APIs.
 ## Installation  :
     npm i axios 
+
+# Firebase Integration
+    Firebase est une plateforme de développement d'applications mobiles et web proposée par Google. Elle fournit divers services comme l'hébergement, l'authentification, la base de données en temps réel, et plus encore, permettant de créer des applications robustes et évolutives.
+## Liens vers le site officiel
+    https://firebase.google.com/
+
+## Installation de Firebase
+    Pour intégrer Firebase à votre projet React, commencez par installer le package Firebase via npm. Cette étape vous permet de configurer et d'utiliser les services Firebase dans votre application. 
+
+    npm install firebase
+
+## Configuration de firebase
+### Créer un Projet Firebase :
+    Rendez-vous sur le console Firebase et créez un nouveau projet.
+
+### Obtenir les Clés de Configuration :
+    Après avoir créé votre projet, Firebase vous fournira un ensemble de clés de configuration. Ces clés sont nécessaires pour connecter votre application à votre projet Firebase.
+    
+### Créer un Fichier de Configuration :
+    Dans votre projet React, créez un fichier (par exemple, firebaseConfig.js) et ajoutez-y le code de configuration fourni par Firebase.
