@@ -7,6 +7,10 @@ import {Input} from '../components/ui/input'
 import {SelectBudgetOptions, selectTravelesList} from '../components/constants/options'
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
+import { toast } from "sonner"
+import { AI_PROMPT } from '../components/constants/options';
+import { chatSession } from '@/service/IAModel';
+
 
 
 function createTrip() {
@@ -31,15 +35,28 @@ function createTrip() {
   }
 
   useEffect(() => {
-    console.log(formData)
+    console.log(formData)   
   }, [formData])
 
-  const onGenerateTrip = () => {
-    if (formData?.noOfDays >  5) {
+  const onGenerateTrip = async () => {
+
+    if (formData?.noOfDays >  5 && !formData?.budget || !formData?.location || !formData?.traveler) {  
+      toast("Please fill all the details")
       return
     }
 
-    console.log(formData)
+    const FINAL_PROMPT = AI_PROMPT
+    .replace('{location}', formData?.location?.label)
+    .replace('{totalDays}', formData?.noOfDays)
+    .replace('{traveler}', formData?.traveler)
+    .replace('{budget}', formData?.budget)
+    .replace('{totalDays}', formData?.noOfDays)
+
+    console.log(FINAL_PROMPT)
+
+    const result = await chatSession.sendMessage(FINAL_PROMPT)
+
+    console.log(result?.response?.text())
   }
 
   return (

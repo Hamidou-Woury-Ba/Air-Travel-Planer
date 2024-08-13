@@ -60,3 +60,11 @@ Currently, two official plugins are available:
 
 # Site pour avoir des emojis gratuits
     https://emojipedia.org/
+
+
+# IA
+    https://aistudio.google.com/
+
+## Install the Generative AI SDK
+    npm install @google/generative-ai
+

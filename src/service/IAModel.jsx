@@ -1,0 +1,44 @@
+/*
+ * Install the Generative AI SDK
+ *
+ * $ npm install @google/generative-ai
+ */
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+  
+  const apiKey = import.meta.env.VITE_GOOGLE_GEMINI_AI_API_KEY;
+  const genAI = new GoogleGenerativeAI(apiKey);
+  
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    systemInstruction: "Generate Travel Plan for Location : Las Vegas, for 3 Days for couple with a Cheap budget, Ginve me a Hotels options list with HotelName, Hotel Adress, Price, hotel image url, geo coordinates, rating, description and suggest itenary with placeName, Place details, Place Image Url, Geo Coordinates, ticket Pricing, ricing , Time travel each of the Location for 3 days with each day plan with best time to visit in JSON FORMAT.",
+  });
+  
+  const generationConfig = {
+    temperature: 1,
+    topP: 0.95,
+    topK: 64,
+    maxOutputTokens: 8192,
+    responseMimeType: "application/json",
+  };
+  
+    export const chatSession = model.startChat({
+      generationConfig,
+   // safetySettings: Adjust safety settings
+   // See https://ai.google.dev/gemini-api/docs/safety-settings
+      history: [
+        {
+          role: "user",
+          parts: [
+            {text: "Generate Travel Plan for Location : Las Vegas, for 3 Days for couple with a Cheap budget, Ginve me a Hotels options list with HotelName, Hotel Adress, Price, hotel image url, geo coordinates, rating, description and suggest itenary with placeName, Place details, Place Image Url, Geo Coordinates, ticket Pricing, ricing , Time travel each of the Location for 3 days with each day plan with best time to visit in JSON FORMAT.\n"},
+          ],
+        },
+        {
+          role: "model",
+          parts: [
+            {text: "```json\n{\n  \"hotels\": [\n    {\n      \"hotelName\": \"The D Las Vegas\",\n      \"hotelAddress\": \"301 Fremont Street, Las Vegas, NV 89101\",\n      \"price\": \"$50 - $100 per night\",\n      \"hotelImageUrl\": \"https://www.the-d.com/media/wysiwyg/images/hotel/hotel_exterior.jpg\",\n      \"geoCoordinates\": \"36.1699, -115.1423\",\n      \"rating\": \"3.5 stars\",\n      \"description\": \"A retro-themed hotel with a casino, pool, and live entertainment. Located in the heart of Fremont Street.\"\n    },\n    {\n      \"hotelName\": \"Golden Nugget Las Vegas\",\n      \"hotelAddress\": \"129 E Fremont St, Las Vegas, NV 89101\",\n      \"price\": \"$60 - $150 per night\",\n      \"hotelImageUrl\": \"https://www.goldennugget.com/media/images/hotel/exterior.jpg\",\n      \"geoCoordinates\": \"36.1698, -115.1421\",\n      \"rating\": \"4 stars\",\n      \"description\": \"A luxurious hotel with a casino, pool, and a variety of restaurants. Features a large shark tank.\"\n    },\n    {\n      \"hotelName\": \"Plaza Hotel & Casino\",\n      \"hotelAddress\": \"1 Main St, Las Vegas, NV 89101\",\n      \"price\": \"$40 - $100 per night\",\n      \"hotelImageUrl\": \"https://www.plazahotelcasino.com/sites/default/files/styles/page_hero/public/2020-11/plaza-hotel-exterior-1200.jpg\",\n      \"geoCoordinates\": \"36.1702, -115.1421\",\n      \"rating\": \"3 stars\",\n      \"description\": \"A historic hotel with a casino, pool, and a variety of dining options. Offers a more affordable alternative to the Strip.\"\n    }\n  ],\n  \"itinerary\": {\n    \"day1\": {\n      \"morning\": {\n        \"placeName\": \"Fremont Street Experience\",\n        \"placeDetails\": \"Experience the vibrant atmosphere of Fremont Street, with its iconic canopy of lights, street performers, and casinos.\",\n        \"placeImageUrl\": \"https://www.visitlasvegas.com/media/images/content/attractions/fremont-street-experience/fremont-street-experience-15661.jpg\",\n        \"geoCoordinates\": \"36.1697, -115.1421\",\n        \"ticketPricing\": \"Free\",\n        \"time\": \"9:00 AM - 12:00 PM\"\n      },\n      \"afternoon\": {\n        \"placeName\": \"The Neon Museum\",\n        \"placeDetails\": \"Explore the history of Las Vegas through its iconic neon signs. Take a guided tour or wander through the museum's outdoor exhibits.\",\n        \"placeImageUrl\": \"https://www.visitlasvegas.com/media/images/content/attractions/neon-museum/neon-museum-8167.jpg\",\n        \"geoCoordinates\": \"36.1713, -115.1439\",\n        \"ticketPricing\": \"$20 - $30 per person\",\n        \"time\": \"1:00 PM - 4:00 PM\"\n      },\n      \"evening\": {\n        \"placeName\": \"Free Show at The LINQ Promenade\",\n        \"placeDetails\": \"Enjoy a free outdoor show at The LINQ Promenade, featuring live music, street performers, and the High Roller observation wheel.\",\n        \"placeImageUrl\": \"https://www.caesars.com/content/dam/caesars-entertainment/linq/images/linq-promenade-high-roller-exterior-night.jpg\",\n        \"geoCoordinates\": \"36.1202, -115.1742\",\n        \"ticketPricing\": \"Free\",\n        \"time\": \"6:00 PM - 9:00 PM\"\n      }\n    },\n    \"day2\": {\n      \"morning\": {\n        \"placeName\": \"The Strip\",\n        \"placeDetails\": \"Walk down the famous Las Vegas Strip, admiring the lavish hotels and casinos. Enjoy people-watching and take in the vibrant atmosphere.\",\n        \"placeImageUrl\": \"https://www.visitlasvegas.com/media/images/content/attractions/the-strip/the-strip-6044.jpg\",\n        \"geoCoordinates\": \"36.1152, -115.1739\",\n        \"ticketPricing\": \"Free\",\n        \"time\": \"9:00 AM - 12:00 PM\"\n      },\n      \"afternoon\": {\n        \"placeName\": \"Bellagio Conservatory & Botanical Garden\",\n        \"placeDetails\": \"Admire the stunning floral displays and intricate sculptures in the Bellagio's Conservatory. This free attraction changes with the seasons.\",\n        \"placeImageUrl\": \"https://www.visitlasvegas.com/media/images/content/attractions/bellagio-conservatory-botanical-garden/bellagio-conservatory-botanical-garden-17074.jpg\",\n        \"geoCoordinates\": \"36.1151, -115.1749\",\n        \"ticketPricing\": \"Free\",\n        \"time\": \"1:00 PM - 4:00 PM\"\n      },\n      \"evening\": {\n        \"placeName\": \"Fountains of Bellagio Show\",\n        \"placeDetails\": \"Witness the spectacular water and music show at the Bellagio fountains. The show runs every 15 minutes in the evening.\",\n        \"placeImageUrl\": \"https://www.visitlasvegas.com/media/images/content/attractions/fountains-of-bellagio/fountains-of-bellagio-11751.jpg\",\n        \"geoCoordinates\": \"36.1151, -115.1749\",\n        \"ticketPricing\": \"Free\",\n        \"time\": \"7:00 PM - 9:00 PM\"\n      }\n    },\n    \"day3\": {\n      \"morning\": {\n        \"placeName\": \"Hoover Dam\",\n        \"placeDetails\": \"Take a day trip to the impressive Hoover Dam, a marvel of engineering and a must-see for any visitor to Las Vegas. It's about a 45-minute drive.\",\n        \"placeImageUrl\": \"https://www.visitlasvegas.com/media/images/content/attractions/hoover-dam/hoover-dam-12117.jpg\",\n        \"geoCoordinates\": \"36.0072, -114.9965\",\n        \"ticketPricing\": \"$30 per person\",\n        \"time\": \"9:00 AM - 12:00 PM\"\n      },\n      \"afternoon\": {\n        \"placeName\": \"Red Rock Canyon National Conservation Area\",\n        \"placeDetails\": \"Explore the scenic beauty of Red Rock Canyon, featuring towering sandstone cliffs and stunning desert landscapes. Hike one of the many trails or enjoy a scenic drive.\",\n        \"placeImageUrl\": \"https://www.nps.gov/redr/planyourvisit/images/redrockcanyon-9040-0001.jpg\",\n        \"geoCoordinates\": \"36.1299, -115.2986\",\n        \"ticketPricing\": \"$15 per vehicle\",\n        \"time\": \"1:00 PM - 4:00 PM\"\n      },\n      \"evening\": {\n        \"placeName\": \"Local Buffet\",\n        \"placeDetails\": \"Enjoy a final meal at a local buffet, offering a wide variety of food options at an affordable price.\",\n        \"placeImageUrl\": \"https://www.thelinq.com/content/dam/caesars-entertainment/linq/images/linq-promenade-buffet-exterior.jpg\",\n        \"geoCoordinates\": \"36.1202, -115.1742\",\n        \"ticketPricing\": \"$15 - $25 per person\",\n        \"time\": \"7:00 PM - 9:00 PM\"\n      }\n    }\n  }\n}\n```\n\n**Notes:**\n\n* This itinerary focuses on free or very cheap activities. \n* Many hotels in Las Vegas offer free shuttles to the Strip and other attractions, so you might not need to rent a car.\n* You can always find discounted tickets for shows, attractions, and tours online or at the Las Vegas Visitor Center.\n* This itinerary is just a suggestion and can be customized to suit your interests and preferences.\n* Remember to bring comfortable shoes, sunscreen, and a hat for exploring the desert.\n\nThis itinerary helps you discover the vibrant city of Las Vegas without breaking the bank!"},
+          ],
+        },
+      ],
+    });
+  
