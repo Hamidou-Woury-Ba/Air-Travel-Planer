@@ -24,6 +24,7 @@ import axios from 'axios';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/service/firebaseconfig';
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useNavigate } from 'react-router-dom';
 
 
 // Fonction principale pour créer un voyage
@@ -39,6 +40,8 @@ function createTrip() {
   const [openDialog, setOpenDialog] = useState(false) // État pour gérer l'ouverture du dialogue de connexion
 
   const [loading, setLoading] = useState(false) // État pour gérer le chargement de la page
+
+  const navigate = useNavigate() // Utilisation de la fonction de navigation pour rediriger l'utilisateur vers une autre page
 
   // Fonction pour gérer le changement de pays sélectionné
   const handleCountryChange = (event, value) => {
@@ -130,6 +133,8 @@ function createTrip() {
 
     // Désactive l'indicateur de chargement une fois la sauvegarde terminée
     setLoading(false)
+
+    navigate('/view-trip/' + docId) // Redirige l'utilisateur vers la page de visualisation du voyage généré
   }
 
 
@@ -151,7 +156,7 @@ function createTrip() {
 
   // Structure JSX de la page
   return (
-    <div className='sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10 '>
+    <div className='sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10'>
       <h2 className='font-medium text-3xl'>Tell us your travel preferences 🏕️🌴</h2>
       <p className='mt-3 text-gray-500 text-xl'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo repellendus saepe natus praesentium accusantium laborum deleniti velit magni ut ab quo, dolorem esse. Ad officia maiores quos, molestias rem nisi?</p>
       {/* Section pour choisir la destination */}

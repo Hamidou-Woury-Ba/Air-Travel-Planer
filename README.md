@@ -115,3 +115,12 @@ Currently, two official plugins are available:
     
 ### Créer un Fichier de Configuration :
     Dans votre projet React, créez un fichier (par exemple, firebaseConfig.js) et ajoutez-y le code de configuration fourni par Firebase.
+
+# Google maps Intégration
+## Lien vers le site officiel
+    https://developers.google.com/maps/documentation/urls/get-started?hl=fr
+
+## Action sur la carte
+    Vous pouvez effectuer des recherches, obtenir des itinéraires, afficher une carte ou afficher un panorama Street View. Vous spécifiez l'action dans l'URL de la requête, ainsi que les paramètres obligatoires et facultatifs. Comme c'est la norme pour les URL, vous devez séparer les paramètres à l'aide de l'esperluette (&). Pour chaque action, la liste des paramètres et leurs valeurs possibles sont énumérées dans la section Paramètres de recherche.
+    Dans notre cas on recherche selon le nom et l'adresse. Ex : 
+    <Link to={'https://www.google.com/maps/search/?api=1&query=' + hotel?.hotelName + ", " + hotel?.hotelAddress} target='_blank'>
