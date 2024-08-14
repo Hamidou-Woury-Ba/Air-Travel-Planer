@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import InfoSection from './component/InfoSection'
 import Hotels from './component/Hotels'
 import PlacesToVisit from './component/PlacesToVisit'
+import Footer from './component/Footer'
 
 function ViewTrip() {
 
@@ -50,6 +51,9 @@ function ViewTrip() {
 
             {/* Places à visiter */}
             <PlacesToVisit trip={trip}/>
+
+            {/* Pieds de page */}
+            <Footer trip={trip} />
         </div>
     )
 }
