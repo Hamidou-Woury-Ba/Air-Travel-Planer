@@ -125,5 +125,6 @@ Currently, two official plugins are available:
     Dans notre cas on recherche selon le nom et l'adresse. Ex : 
     <Link to={'https://www.google.com/maps/search/?api=1&query=' + hotel?.hotelName + ", " + hotel?.hotelAddress} target='_blank'>
 
-#Google place API
-https://developers.google.com/maps/documentation/places/web-service/search-text?hl=fr
+# Deploiement
+## lien du site :
+    https://vercel.com/
