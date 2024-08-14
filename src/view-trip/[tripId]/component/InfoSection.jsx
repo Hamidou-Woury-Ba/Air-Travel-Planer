@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { IoIosSend } from "react-icons/io";
+import { GetPlaceDetails } from '@/service/GlobalApi';
 
 /**
  * Information Section Component
@@ -10,6 +11,20 @@ import { IoIosSend } from "react-icons/io";
  * @returns {JSX.Element} Information Section Component 
  */
 function InfoSection({ trip }) {
+
+  // useEffect(() => {
+  //   trip && GetPlacePhotos()
+  // }, [trip]) 
+
+  // const GetPlacePhotos = async () => {
+  //   const data = {
+  //     textQuery: trip?.userSelection?.location?.label,
+  //   }
+  //   const result = await GetPlaceDetails(data).then((res) => (
+  //     console.log(res.data)
+  //   ))
+  // }
+
   return (
     <div>
       <img src="/placeholder.jpg" alt="" className='h-[340px] w-full object-cover rounded-xl' />

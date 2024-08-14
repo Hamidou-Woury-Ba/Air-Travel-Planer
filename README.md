@@ -124,3 +124,6 @@ Currently, two official plugins are available:
     Vous pouvez effectuer des recherches, obtenir des itinéraires, afficher une carte ou afficher un panorama Street View. Vous spécifiez l'action dans l'URL de la requête, ainsi que les paramètres obligatoires et facultatifs. Comme c'est la norme pour les URL, vous devez séparer les paramètres à l'aide de l'esperluette (&). Pour chaque action, la liste des paramètres et leurs valeurs possibles sont énumérées dans la section Paramètres de recherche.
     Dans notre cas on recherche selon le nom et l'adresse. Ex : 
     <Link to={'https://www.google.com/maps/search/?api=1&query=' + hotel?.hotelName + ", " + hotel?.hotelAddress} target='_blank'>
+
+#Google place API
+https://developers.google.com/maps/documentation/places/web-service/search-text?hl=fr
