@@ -29,8 +29,8 @@ function MyTrips() {
             return
         }
 
-        const q = query(collection(db, 'AITrips'), where('userEmail', '==', user?.email))
-        const querySnapshot = await getDocs(q);
+        const q = query(collection(db, 'AITrips'), where('userEmail', '==', user?.email)) // Utilisez `where` pour filtrer les voyages de l'utilisateur actuel
+        const querySnapshot = await getDocs(q); // Utilisez `getDocs` pour obtenir les voyages de l'utilisateur actuel
 
         setUserTrips([]) // Réinitialisez l'état
         querySnapshot.forEach((doc) => {
@@ -38,6 +38,7 @@ function MyTrips() {
             console.log(doc.id, " => ", doc.data());
             setUserTrips(preVal => [...preVal, doc.data()]) // Mettez à jour l'état
         });
+        // console.log(userTrips)
     }
 
     return (

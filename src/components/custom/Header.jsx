@@ -20,7 +20,7 @@ import {
 
 function Header() {
 
-  const user = JSON.parse(localStorage.getItem('user'))
+  const user = JSON.parse(localStorage.getItem('user')) // Récupérer l'utilisateur connecté dans le stockage local
 
   const [openDialog, setOpenDialog] = useState(false) // État pour gérer l'ouverture du dialogue de connexion
 
@@ -52,7 +52,7 @@ function Header() {
 
 
   return (
-    <div className='p-3 shadow-sm flex justify-between items-center px-4'>
+    <div className='p-3 shadow-sm flex justify-between items-center px-4 w-full'>
       <img src="/logo.svg" alt="" />
       <div>
         {

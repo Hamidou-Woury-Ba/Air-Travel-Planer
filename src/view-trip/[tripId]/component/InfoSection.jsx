@@ -25,7 +25,7 @@ function InfoSection({ trip }) {
   //   ))
   // }
 
-  return (
+  return (  
     <div>
       <img src="/placeholder.jpg" alt="" className='h-[340px] w-full object-cover rounded-xl' />
       <div className='flex justify-between items-center'>

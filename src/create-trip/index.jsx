@@ -102,7 +102,7 @@ function createTrip() {
     const result = await chatSession.sendMessage(FINAL_PROMPT)
 
     // Affichage du résultat obtenu dans la console pour le débogage
-    console.log("--", result?.response?.text())
+    console.log("IA Generate : ", result?.response?.text())
 
     // Désactive l'indicateur de chargement une fois la réponse de l'IA reçue
     setLoading(false)
@@ -161,6 +161,7 @@ function createTrip() {
       <p className='mt-3 text-gray-500 text-xl'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo repellendus saepe natus praesentium accusantium laborum deleniti velit magni ut ab quo, dolorem esse. Ad officia maiores quos, molestias rem nisi?</p>
       {/* Section pour choisir la destination */}
       <div className='mt-20 flex flex-col gap-9'>
+        {/* Section pour choisir la destination */}
         <div>
           <h2 className='text-xl my-3 font-medium'>What is destination of choice ?</h2>
           {/* <GooglePlacesAutocomplete apiKey={import.meta.env.VITE_GOOGLE_PLACES_API_KEY}/> */}
@@ -212,48 +213,49 @@ function createTrip() {
             onChange={(e) => handleInputChange('noOfDays', e.target.value)} // Appel lors du changement de valeur
           />
         </div>
-      </div>
 
-      {/* Section pour choisir le budget */}
-      <div>
-        <h2 className='font-medium my-3 text-3xl'>What is your budget ?</h2>
-        <div className='grid grid-cols-4 gap-5 mt-5'>
-          {SelectBudgetOptions.map((item, index) => (
-            <div
-              key={index}
-              className={
-                `p-4 cursor-pointer border rounded-lg hover:shadow-lg
+        {/* Section pour choisir le budget */}
+        <div>
+          <h2 className='font-medium my-3 text-3xl'>What is your budget ?</h2>
+          <div className='grid grid-cols-4 gap-5 mt-5'>
+            {SelectBudgetOptions.map((item, index) => (
+              <div
+                key={index}
+                className={
+                  `p-4 cursor-pointer border rounded-lg hover:shadow-lg
                   ${formData?.budget == item.title && 'shadow-lg border-black'}`
-              }
-              onClick={() => handleInputChange('budget', item.title)}  // Appel lors du clic pour sélectionner un budget
-            >
-              <h2 className='text-4xl'>{item.icon}</h2>
-              <h2 className='font-bold text-lg'>{item.title}</h2>
-              <h2 className='text-sm text-gray-500'>{item.desc}</h2>
-            </div>
-          ))}
+                }
+                onClick={() => handleInputChange('budget', item.title)}  // Appel lors du clic pour sélectionner un budget
+              >
+                <h2 className='text-4xl'>{item.icon}</h2>
+                <h2 className='font-bold text-lg'>{item.title}</h2>
+                <h2 className='text-sm text-gray-500'>{item.desc}</h2>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Section pour choisir le nombre de voyageurs */}
-      <div>
-        <h2 className='font-medium my-3 text-3xl'>Who do you plan on travelling on your next adventure ?</h2>
-        <div className='grid grid-cols-4 gap-5 mt-5'>
-          {selectTravelesList.map((item, index) => (
-            <div
-              key={index}
-              className={
-                `p-4 cursor-pointer border rounded-lg hover:shadow-lg
+        {/* Section pour choisir le nombre de voyageurs */}
+        <div>
+          <h2 className='font-medium my-3 text-3xl'>Who do you plan on travelling on your next adventure ?</h2>
+          <div className='grid grid-cols-4 gap-5 mt-5'>
+            {selectTravelesList.map((item, index) => (
+              <div
+                key={index}
+                className={
+                  `p-4 cursor-pointer border rounded-lg hover:shadow-lg
                   ${formData?.traveler == item.people && 'shadow-lg border-black'}`
-              }
-              onClick={() => handleInputChange('traveler', item.people)}  // Appel lors du clic pour sélectionner des compagnons de voyage
-            >
-              <h2 className='text-4xl'>{item.icon}</h2>
-              <h2 className='font-bold text-lg'>{item.title}</h2>
-              <h2 className='text-sm text-gray-500'>{item.desc}</h2>
-            </div>
-          ))}
+                }
+                onClick={() => handleInputChange('traveler', item.people)}  // Appel lors du clic pour sélectionner des compagnons de voyage
+              >
+                <h2 className='text-4xl'>{item.icon}</h2>
+                <h2 className='font-bold text-lg'>{item.title}</h2>
+                <h2 className='text-sm text-gray-500'>{item.desc}</h2>
+              </div>
+            ))}
+          </div>
         </div>
+
       </div>
 
       {/* 
@@ -307,8 +309,6 @@ function createTrip() {
           </DialogHeader>
         </DialogContent>
       </Dialog>
-
-
     </div>
   )
 }
