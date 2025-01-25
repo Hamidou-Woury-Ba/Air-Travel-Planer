@@ -1,5 +1,5 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
 
 function Hotels({ trip }) {
     return (
@@ -22,6 +22,20 @@ function Hotels({ trip }) {
             </div>
         </div>
     )
+}
+Hotels.propTypes = {
+    trip: PropTypes.shape({
+        tripData: PropTypes.shape({
+            hotels: PropTypes.arrayOf(
+                PropTypes.shape({
+                    hotelName: PropTypes.string,
+                    hotelAddress: PropTypes.string,
+                    price: PropTypes.number,
+                    rating: PropTypes.number
+                })
+            )
+        })
+    })
 }
 
 export default Hotels

@@ -1,5 +1,3 @@
-import React from 'react'
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -15,8 +13,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin } from '@react-oauth/google';
@@ -28,7 +24,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 // Fonction principale pour créer un voyage
-function createTrip() {
+function CreateTrip() {
   // Déclare des états pour stocker les informations du formulaire et les paramètres de la page
 
   const [place, setPlace] = useState()
@@ -46,6 +42,7 @@ function createTrip() {
   // Fonction pour gérer le changement de pays sélectionné
   const handleCountryChange = (event, value) => {
     setSelectedCountry(value);
+    console.log(value)
     handleInputChange('location', value);  // Ajout du pays sélectionné à formData
   };
 
@@ -159,7 +156,7 @@ function createTrip() {
     <div className='sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10'>
       <h2 className='font-medium text-3xl'>Tell us your travel preferences 🏕️🌴</h2>
       <p className='mt-3 text-gray-500 text-xl'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo repellendus saepe natus praesentium accusantium laborum deleniti velit magni ut ab quo, dolorem esse. Ad officia maiores quos, molestias rem nisi?</p>
-      {/* Section pour choisir la destination */}
+      
       <div className='mt-20 flex flex-col gap-9'>
         {/* Section pour choisir la destination */}
         <div>
@@ -223,7 +220,7 @@ function createTrip() {
                 key={index}
                 className={
                   `p-4 cursor-pointer border rounded-lg hover:shadow-lg
-                  ${formData?.budget == item.title && 'shadow-lg border-black'}`
+                  ${formData?.budget  == item.title && 'shadow-lg border-black'}`
                 }
                 onClick={() => handleInputChange('budget', item.title)}  // Appel lors du clic pour sélectionner un budget
               >
@@ -739,4 +736,4 @@ const countries = [
   { code: 'ZW', label: 'Zimbabwe', phone: '263' },
 ];
 
-export default createTrip
+export default CreateTrip
